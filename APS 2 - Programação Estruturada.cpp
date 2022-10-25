@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+//Criando o registro que terá os dados cadastrados
 struct Pessoa{
 	char nome[50];
 	char data_nascimento[30];
@@ -11,9 +12,12 @@ struct Pessoa{
 	int cpf;
 	int telefone;
 }pessoa;
+
+//Chamada das funções para evitar problemas de precedência
 struct Pessoa preencher_dados();
 void imprimir_dados(struct Pessoa p);
 
+//Programa principal
 int main(){	
 	struct Pessoa p;
 	p = preencher_dados();
@@ -21,6 +25,7 @@ int main(){
 	return 0;
 }
 
+//Função que preenche os dados do registro
 struct Pessoa preencher_dados(){
 	struct Pessoa p;
 	strcpy(p.nome, "Pedro Gaspar");
@@ -34,6 +39,7 @@ struct Pessoa preencher_dados(){
 	
 }
 
+//Função que imprime os dados do registro
 void imprimir_dados(struct Pessoa p){
 	printf("Nome: %s\n", p.nome);
 	printf("CPF: %i\n", p.cpf);
