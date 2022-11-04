@@ -1,51 +1,234 @@
-#include <stdio.h>
+//Trabalho da APS 2 de Programação Estruturada
+
+//Objetivo: Criar uma função de exclusão para a lista encadeada abaixo desenvolvida pelo professor
+
+
+/*
+Listas Simplesmente Encadeadas
+Desenvolvedor: Sérgio Assunção Monteiro, D.Sc.
+*/
+/*------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------*/
+#include<stdio.h>
 #include <stdlib.h>
-#include <string.h>
+/*------------------------------------------------------------------------------*/
+struct ELista
+{
+	int elem;
+	struct ELista *prox;
+};
+struct EMonitor
+{
+	struct ELista*prim;
+	struct ELista*fim;
+	int qtde;
+};
+/*------------------------------------------------------------------------------*/
+void create();
+void inserir(int elem);
+int menu();
+void imprimir();
+int pesquisar(int elem);
+void excluir(int elem);
+struct ELista *pesquisar_ponteiro(int elem, struct ELista **ant);
+/*------------------------------------------------------------------------------*/
+struct EMonitor monitor;
+/*------------------------------------------------------------------------------*/
+main()
+{
+	create();
+	while(menu());
+}
+/*------------------------------------------------------------------------------*/
+void create()
+{
+	monitor.prim=NULL;
+	monitor.fim=NULL;
+	monitor.qtde=0;	
+}
+/*------------------------------------------------------------------------------*/
+int menu()
+{
+	int opcao;
+	system("cls");
+	printf("\n Digite:");
+	printf("\n   0. Para Sair ");
+	printf("\n   1.Para Inserir ");
+	printf("\n   2.Para Imprimir ");
+	printf("\n   3.Para Buscar a posicao de um determinado elemento ");
+	printf("\n   4.Para excluir um determinado elemento da lista");
+	printf("\n");
+	scanf("%d",&opcao);
+	switch(opcao)
+	{
+		case 0:return 0;
+		case 1:
+		{ int elem;
+		  printf("\nDigite o elemento para inserir na lista: ");
+		  scanf("%d",&elem);
+		  inserir(elem);
+		  return 1;
+		}
+		case 2:
+		{ int elem;
+		  imprimir();
+		  printf("\nPressione qualquer tecla para continuar");		  
+		  system("pause");
+		  return 1;
+		}		
+		case 3:
+		{ int elem;
+		  int posicao;
+		  printf("\nDigite o elemento para pesquisar na lista: ");
+		  scanf("%d",&elem);
+		  posicao=pesquisar(elem);
+		  if(posicao>0){
+		  	printf("O elemento %i estah na posicao %i\n",elem,posicao);
+		  }
+		  else{
+		  	printf("O elemento %i não estah na lista \n",elem);
+		  }
+ 		  printf("\nPressione qualquer tecla para continuar");		  
+		  system("pause");
+		  return 1;
+		}
+		case 4:
+		{ int elem;
+		  printf("\nDigite o elemento para excluir na lista: ");
+		  scanf("%d",&elem);
+		  excluir(elem);
+  		  printf("\nPressione qualquer tecla para continuar");		  
+		  system("pause");
+		  return 1;
+		}
 
-//Criando o registro que terá os dados cadastrados
-struct Pessoa{
-	char nome[50];
-	char data_nascimento[30];
-	char endereco[30];
-	char email[20];
-	int rg;
-	int cpf;
-	int telefone;
-}pessoa;
-
-//Chamada das funções para evitar problemas de precedência
-struct Pessoa preencher_dados();
-void imprimir_dados(struct Pessoa p);
-
-//Programa principal
-int main(){	
-	struct Pessoa p;
-	p = preencher_dados();
-	imprimir_dados(p);
-	return 0;
+		default:
+			printf("\nDigite uma opcao VALIDA! ");
+			return 1;
+	}	
+}
+/*------------------------------------------------------------------------------*/
+void inserir(int elem)
+{
+	struct ELista *p;
+	p=(struct ELista *)malloc(sizeof(struct ELista));
+	p->elem=elem;
+	p->prox=NULL;
+	monitor.qtde++;	
+	/*verifica se a lista eh vazia*/
+	if(!monitor.prim)
+	{
+		monitor.prim=monitor.fim=p;
+		return;
+	}
+	/*inserir no Inicio da Lista*/
+	if(p->elem<=monitor.prim->elem)
+	{
+		p->prox=monitor.prim;
+		monitor.prim=p;
+		return;
+	}
+	/*inserir no Final da Lista*/
+	if(p->elem>=monitor.fim->elem)
+	{
+		monitor.fim->prox=p;
+		monitor.fim=p;
+		return;
+	}
+	/*Insercao Intermediaria. Existem, pelo menos, dois elementos*/
+	struct ELista *aux;
+	aux=monitor.prim;
+	while((aux->prox->elem)<(p->elem))
+		aux=aux->prox;
+    p->prox=aux->prox;
+    aux->prox=p;
+}
+/*------------------------------------------------------------------------------*/
+void imprimir()
+{
+  struct ELista *p;
+  p=monitor.prim;
+  while(p)
+  {
+  	printf("\np->elem=[%d]",p->elem);
+  	p=p->prox;
+  }
+}
+/*------------------------------------------------------------------------------*/
+int pesquisar(int elem)
+{
+  struct ELista *p;
+  int posicao=0;
+  p=monitor.prim;  
+  while(p)
+  {
+  	posicao++;
+  	if(p->elem==elem){
+		return posicao;  
+	}  	
+  	p=p->prox;
+  }
+  return posicao;  
+}
+/*------------------------------------------------------------------------------*/
+struct ELista *pesquisar_ponteiro(int elem, struct ELista **ant)
+{
+  struct ELista *p;  
+  p=monitor.prim;  
+  *ant=NULL;
+  while(p)
+  {    		
+  	if(p->elem==elem){
+		return p;  
+	}
+	*ant=p;  	
+  	p=p->prox;
+  }
+  return p;  
 }
 
-//Função que preenche os dados do registro
-struct Pessoa preencher_dados(){
-	struct Pessoa p;
-	strcpy(p.nome, "Pedro Gaspar");
-	strcpy(p.data_nascimento, "06 de Janeiro de 2003");
-	strcpy(p.endereco, "Rua 2, casa 3");
-	strcpy(p.email, "Pedro12345@gmail.com");
-	p.rg = 2324545;
-	p.cpf = 1777777;
-	p.telefone = 23223212;
-	return p;
-	
-}
-
-//Função que imprime os dados do registro
-void imprimir_dados(struct Pessoa p){
-	printf("Nome: %s\n", p.nome);
-	printf("CPF: %i\n", p.cpf);
-	printf("Telefone: %i\n", p.telefone);
-	printf("Data de Nascimento: %s\n", p.data_nascimento);
-	printf("RG: %i\n", p.rg);
-	printf("Telefone: %s\n", p.email);
-	printf("Endereco: %s\n", p.endereco);
+/*------------------------------------------------------------------------------*/
+void excluir(int elem)
+{
+	int valor;
+	struct ELista *p;
+	struct ELista *ant;
+	p=pesquisar_ponteiro(elem, &ant);
+	if(p==NULL){
+		printf("\nO elemento nao consta na lista");
+		return;
+	}
+	printf("\nO elemento encontrado na lista\n");
+	ant = monitor.prim;
+	p = monitor.prim;
+	while (p != NULL)
+	{
+		if (p->elem == elem)
+		{
+			if (p == monitor.prim)
+			{
+				monitor.prim = monitor.prim->prox;
+				free(p);
+				printf("\nExclusao realizada com sucesso!");
+				break;
+			}
+			else
+			{
+				if (p == monitor.fim)
+				{
+					monitor.fim = ant;
+				}
+				
+				//Refazendo encadeamento
+				ant->prox = p->prox;
+				free(p);
+				printf("\nExclusao realizada com sucesso!");
+				break;
+			}
+		}
+		else
+		ant = p;
+		p = p->prox;
+	}
 }
